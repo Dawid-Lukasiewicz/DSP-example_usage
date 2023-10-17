@@ -1,6 +1,8 @@
 #ifndef UTILITY
 #define UTILITY
 
+#define PI 3.14159265358979323846
+
 void tw_genSPxSPfft(float * w, int n);
 void bit_rev(float* x, int n);
 void tw_genr2fft(float* w, int n);
