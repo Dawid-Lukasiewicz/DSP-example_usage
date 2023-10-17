@@ -10,10 +10,10 @@
 // #include <ti/sysbios/BIOS.h>
 // #include <xdc/cfg/global.h> // for Hwi_enableInterrupt(13)
 // #include "codec/codec_v1_0.c"
-//#include "fft/DSPF_sp_cfftr2_dit.h"
-//#include "fft/utility.h"
-#include "fft/DSPF_sp_cfftr2_dit.c"
-#include "fft/utility.c"
+#include "fft/DSPF_sp_cfftr2_dit.h"
+#include "fft/utility.h"
+// #include "fft/DSPF_sp_cfftr2_dit.c"
+// #include "fft/utility.c"
 
 #define N 512
 #define N_mask 511

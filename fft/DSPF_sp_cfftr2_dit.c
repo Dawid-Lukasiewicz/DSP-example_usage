@@ -49,9 +49,11 @@
 /* ======================================================================== */
 //#pragma CODE_SECTION(DSPF_sp_cfftr2_dit,    ".text:ansi");
 
+#ifndef DSPF_SP
+#define DSPF_SP
 #include "DSPF_sp_cfftr2_dit.h"
 
-static void DSPF_sp_cfftr2_dit(float    * x, float * w, int n)
+void DSPF_sp_cfftr2_dit(float    * x, float * w, int n)
 {
            int n2, ie, ia, i, j, k, m;
            float rtemp, itemp, c, s;
@@ -91,3 +93,5 @@ static void DSPF_sp_cfftr2_dit(float    * x, float * w, int n)
 /*          Copyright (C) 2002 Texas Instruments, Incorporated.             */
 /*                          All Rights Reserved.                            */
 /* ======================================================================== */
+
+#endif

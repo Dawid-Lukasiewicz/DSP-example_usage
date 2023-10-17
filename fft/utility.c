@@ -20,7 +20,7 @@
 /*                                                                          */
 /* ======================================================================== */
 
-#include<math.h>
+#include <math.h>
 #include "utility.h"
 
 #define PI 3.14159265358979323846
@@ -46,35 +46,35 @@
 /*      sp_fftSPxSP   routine.                                              */
 /*                                                                          */
 /* ======================================================================== */
-void tw_genSPxSPfft(float * w, int n)                                      
-{                                                                  
-     int i, j, k;                                                        
-     double x_t, y_t, theta1, theta2, theta3;                         
-                                                                       
-     for (j=1, k=0; j <= n>>2; j = j<<2)                              
-     {                                                                
-         for (i=0; i < n>>2; i+=j)                                    
-         {                                                            
-             theta1 = 2*PI*i/n;                                       
-             x_t = cos(theta1);                                       
-             y_t = sin(theta1);                                       
-             w[k]   =  (float)x_t;                                    
-             w[k+1] =  (float)y_t;                                    
-                                                                      
-             theta2 = 4*PI*i/n;                                       
-             x_t = cos(theta2);                                       
-             y_t = sin(theta2);                                       
-             w[k+2] =  (float)x_t;                                    
-             w[k+3] =  (float)y_t;                                    
-                                                                      
-             theta3 = 6*PI*i/n;                                       
-             x_t = cos(theta3);                                       
-             y_t = sin(theta3);                                       
-             w[k+4] =  (float)x_t;                                    
-             w[k+5] =  (float)y_t;                                    
-             k+=6;                                                    
-         }                                                            
-     }                                                                
+void tw_genSPxSPfft(float * w, int n)
+{
+     int i, j, k;
+     double x_t, y_t, theta1, theta2, theta3;
+
+     for (j=1, k=0; j <= n>>2; j = j<<2)
+     {
+         for (i=0; i < n>>2; i+=j)
+         {
+             theta1 = 2*PI*i/n;
+             x_t = cos(theta1);
+             y_t = sin(theta1);
+             w[k]   =  (float)x_t;
+             w[k+1] =  (float)y_t;
+
+             theta2 = 4*PI*i/n;
+             x_t = cos(theta2);
+             y_t = sin(theta2);
+             w[k+2] =  (float)x_t;
+             w[k+3] =  (float)y_t;
+
+             theta3 = 6*PI*i/n;
+             x_t = cos(theta3);
+             y_t = sin(theta3);
+             w[k+4] =  (float)x_t;
+             w[k+5] =  (float)y_t;
+             k+=6;
+         }
+     }
 }
 
 /* ======================================================================== */
@@ -99,18 +99,18 @@ void tw_genSPxSPfft(float * w, int n)
 /*      be bit-reversed. (see bit_rev)                                      */
 /*                                                                          */
 /* ======================================================================== */
-static void tw_genr2fft(float* w, int n)
-{                                                              
-   int i;                                                      
-   float pi = 4.0*atan(1.0);                                   
-   float e = pi*2.0/n;                                         
-                                                               
-    for(i=0; i < ( n>>1 ); i++)                                
-    {                                                          
-       w[2*i]   = cos(i*e);                                    
-       w[2*i+1] = sin(i*e);                                    
-    }                                                          
-} 
+void tw_genr2fft(float* w, int n)
+{
+   int i;
+   float pi = 4.0*atan(1.0);
+   float e = pi*2.0/n;
+
+    for(i=0; i < ( n>>1 ); i++)
+    {
+       w[2*i]   = cos(i*e);
+       w[2*i+1] = sin(i*e);
+    }
+}
 
 /* ======================================================================== */
 /*                                                                          */
@@ -135,32 +135,32 @@ static void tw_genr2fft(float* w, int n)
 /*      N complex floats (where N is the dimension of the fft).             */
 /*                                                                          */
 /* ======================================================================== */
-static void bit_rev(float* x, int n)
-{                                                              
-  int i, j, k;                                                 
-  float rtemp, itemp;                                          
-                                                               
-  j = 0;                                                       
-  for(i=1; i < (n-1); i++)                                     
-  {                                                            
-     k = n >> 1;                                               
-     while(k <= j)                                             
-     {                                                         
-        j -= k;                                                
-        k >>= 1;                                               
-     }                                                         
-     j += k;                                                   
-     if(i < j)                                                 
-     {                                                         
-        rtemp    = x[j*2];                                     
-        x[j*2]   = x[i*2];                                     
-        x[i*2]   = rtemp;                                      
-        itemp    = x[j*2+1];                                   
-        x[j*2+1] = x[i*2+1];                                   
-        x[i*2+1] = itemp;                                      
-     }                                                         
-   }                                                           
-} 
+void bit_rev(float* x, int n)
+{
+  int i, j, k;
+  float rtemp, itemp;
+
+  j = 0;
+  for(i=1; i < (n-1); i++)
+  {
+     k = n >> 1;
+     while(k <= j)
+     {
+        j -= k;
+        k >>= 1;
+     }
+     j += k;
+     if(i < j)
+     {
+        rtemp    = x[j*2];
+        x[j*2]   = x[i*2];
+        x[i*2]   = rtemp;
+        itemp    = x[j*2+1];
+        x[j*2+1] = x[i*2+1];
+        x[i*2+1] = itemp;
+     }
+   }
+}
 
 
 /* ======================================================================== */
@@ -183,7 +183,7 @@ static void bit_rev(float* x, int n)
 /*      This routine calculates the twiddle factor array for use in the     */
 /*      tw_genr4fft routine.                                                */
 /*                                                                          */
-/* ======================================================================== */            
+/* ======================================================================== */
 void tw_genr4fft(float *w, int N)
 {
     double delta = 2*3.14159265359/N;
@@ -193,8 +193,8 @@ void tw_genr4fft(float *w, int N)
         w[2*i+1] = sin(i * delta);
         w[2*i] = cos(i * delta);
     }
-}                                                           
-              
+}
+
 /* ======================================================================== */
 /*                                                                          */
 /*  TEXAS INSTRUMENTS, INC.                                                 */
@@ -233,7 +233,7 @@ void R4DigitRevIndexTableGen(int n, int * count, unsigned short *IIndex, unsigne
 			JIndex[*count] = (unsigned short)(j-1);
 			*count = *count + 1;
 		}
-					  
+
 		k = n >> 2;
 
 		while(k*3 < j)
@@ -270,9 +270,9 @@ void R4DigitRevIndexTableGen(int n, int * count, unsigned short *IIndex, unsigne
 /*                                                                          */
 /* ======================================================================== */
 void digit_reverse(double *yx, unsigned short *JIndex, unsigned short *IIndex, int count)
-{   
+{
 
-   /* NOTE TRICK -- The value pointed at by yx (*yx) is 
+   /* NOTE TRICK -- The value pointed at by yx (*yx) is
       declared to be of size double... thus both the real and imaginary part
       of each pair of transformed value are exchanged at the same time! */
 

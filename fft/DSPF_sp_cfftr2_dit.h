@@ -90,7 +90,7 @@
 //#ifndef DSPF_SP_CFFTR2_DIT_ASM_H_
 //#define DSPF_SP_CFFTR2_DIT_ASM_H_ 1
 
-static void DSPF_sp_cfftr2_dit(float     * x, float * w, int n);
+void DSPF_sp_cfftr2_dit(float     * x, float * w, int n);
 
 //#endif
 /* ======================================================================== */
