@@ -20,13 +20,13 @@ static void przerwanie_rcv();
 static void pierwszy_task();
 static void generate_sin(float *x, int n);
 
-int probka;
+float probka;  //In this case probka needs to be float, not int
 short n;
 float x[N2];
 float w[N];
-int tmp = 0;
+int tmp;
 
-short n_read;
+short n_read = 0;
 float Read_mcasp1_rcv[N];
 
 int main(void)
@@ -48,7 +48,8 @@ static void przerwanie_rcv()
 
     n_read &= N_mask;
 
-    x[n] = (float)((short)probka);
+    // x[n] = (float)((short)probka);
+    x[n] = probka; // We also do not need the casting to short
     ++n;
     x[n] = 0.0f;
     ++n;
@@ -73,7 +74,7 @@ static void pierwszy_task()
     n_read = 0;
     n = 0;
     tw_genr2fft(w, N);
-    bit_rev(w, N>>1);
+    // bit_rev(w, N>>1);
 
     // Config_and_start_mcasp1(); // Do not add anything after that lines
     // Hwi_enableInterrupt(13);
