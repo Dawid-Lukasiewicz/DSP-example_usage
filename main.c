@@ -87,7 +87,7 @@ static void pierwszy_task()
     n_read = 0;
     n = 0;
     tw_genr2fft(w, N);
-    // bit_rev(w, N>>1);
+    bit_rev(w, N>>1);
 
     // Config_and_start_mcasp1(); // Do not add anything after that lines
     // Hwi_enableInterrupt(13);
