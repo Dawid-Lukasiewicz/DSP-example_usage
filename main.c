@@ -52,13 +52,11 @@ int main(void)
 
 static void przerwanie_rcv()
 {
-    // probka = Read_mcasp1_rcv();
     probka = Read_mcasp1_rcv[n_read];
     ++n_read;
 
     n_read &= N_mask;
 
-    // x[n] = (float)((short)probka);
     x[n] = probka; // We also do not need the casting to short
     x[n] *= h[n>>1];
     x[n+1] = 0.0f;
@@ -84,26 +82,16 @@ static void przerwanie_rcv()
         }
 
     }
-    // Write_mcasp1_xmt(probka);
-    // Restart_mcasp1_if_error();  //Must be the last line of INT
 }
 
 static void pierwszy_task()
 {
-    // Config_i2c_and_codec();
     generate_sin(Read_mcasp1_rcv, N);
     generate_hanning(h, N);
     n_read = 0;
     n = 0;
     tw_genr2fft(w, N);
     bit_rev(w, N>>1);
-
-    // Config_and_start_mcasp1(); // Do not add anything after that lines
-    // Hwi_enableInterrupt(13);
-    // while(1)
-    // {
-
-    // }
 }
 
 static void generate_sin(float *x, int n)
