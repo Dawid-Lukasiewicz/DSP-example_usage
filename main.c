@@ -19,6 +19,7 @@
 static void przerwanie_rcv();
 static void pierwszy_task();
 static void generate_sin(float *x, int n);
+static void generate_hanning(float *x, int n);
 static void open_files();
 static void close_files();
 
@@ -27,6 +28,7 @@ short n;
 float x[N2];
 float w[N];
 float m[N];
+float h[N];
 int tmp;
 
 short n_read = 0;
@@ -58,10 +60,12 @@ static void przerwanie_rcv()
 
     // x[n] = (float)((short)probka);
     x[n] = probka; // We also do not need the casting to short
+    x[n] *= h[n>>1];
     x[n+1] = 0.0f;
 
     // Write signal sample to csv file
-    fprintf(signal_file, "%.2f,", x[n]);
+    fprintf(signal_file, "%.2f,", probka);
+    fprintf(hanning_file, "%.2f,", x[n]);
 
     n += 2;
 
@@ -88,6 +92,7 @@ static void pierwszy_task()
 {
     // Config_i2c_and_codec();
     generate_sin(Read_mcasp1_rcv, N);
+    generate_hanning(h, N);
     n_read = 0;
     n = 0;
     tw_genr2fft(w, N);
@@ -112,16 +117,24 @@ static void generate_sin(float *x, int n)
     }
 }
 
+static void generate_hanning(float *h, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        h[i] = 0.5f*(1-cosf((2*PI*i)/(n-1)));
+    }
+}
+
 static void open_files()
 {
     signal_file     = fopen("signal_file.csv", "w");
     magnitude_file  = fopen("magnitude_file.csv", "w");
-    // hanning_file    = fopen("hanning_file.csv", "w");
+    hanning_file    = fopen("hanning_file.csv", "w");
 }
 
 static void close_files()
 {
     fclose(signal_file);
     fclose(magnitude_file);
-    // fclose(hanning_file);
+    fclose(hanning_file);
 }
