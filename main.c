@@ -5,10 +5,6 @@
 #include "fft/DSPF_sp_cfftr2_dit.h"
 #include "fft/utility.h"
 
-#ifdef LINUX_IMPL
-#include "fftw3.h"
-#endif
-
 #define N               512
 #define N_mask          511
 #define N2              (2*(N))
@@ -24,11 +20,6 @@ static void przerwanie_rcv();
 static void pierwszy_task();
 static void generate_sin(float *x, int n);
 
-#ifdef LINUX_IMPL
-static void linux_fft();
-static void generate_sin_linux(fftw_complex *x, int n);
-#endif
-
 float probka;  //In this case probka needs to be float, not int
 short n;
 float x[N2];
@@ -43,11 +34,7 @@ int main(void)
     pierwszy_task();
     for (int i = 0; i < N*8; i++)
     {
-#ifndef LINUX_IMPL
         przerwanie_rcv();
-#else
-        linux_fft();
-#endif
     }
 
     return(0);
@@ -63,9 +50,8 @@ static void przerwanie_rcv()
 
     // x[n] = (float)((short)probka);
     x[n] = probka; // We also do not need the casting to short
-    ++n;
-    x[n] = 0.0f;
-    ++n;
+    x[n+1] = 0.0f;
+    n += 2;
 
 
     // if condition takes too long. It is better to do logical multiply
@@ -96,35 +82,6 @@ static void pierwszy_task()
 
     // }
 }
-
-#ifdef LINUX_IMPL
-static void linux_fft()
-{
-    fftw_complex *in, *out;
-    fftw_plan p;
-    in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-    out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-    generate_sin_linux(in, N);
-    p = fftw_plan_dft_1d(N, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-
-    fftw_execute(p);
-
-    fftw_destroy_plan(p);
-    fftw_free(in); fftw_free(out);
-}
-
-static void generate_sin_linux(fftw_complex *x, int n)
-{
-    double t = 0.0;
-    double time_interval = 2*PI*(((double)FREQ/(double)SAMPLE_FREQ));
-    for (int i = 0; i < n; i++)
-    {
-        x[i][0] = V * sin(t);
-        x[i][1] = 0.0;
-        t += time_interval;
-    }
-}
-#endif
 
 static void generate_sin(float *x, int n)
 {
