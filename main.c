@@ -19,6 +19,8 @@
 static void przerwanie_rcv();
 static void pierwszy_task();
 static void generate_sin(float *x, int n);
+static void open_files();
+static void close_files();
 
 float probka;  //In this case probka needs to be float, not int
 short n;
@@ -29,14 +31,19 @@ int tmp;
 short n_read = 0;
 float Read_mcasp1_rcv[N];
 
+FILE *signal_file;
+FILE *magnitude_file;
+FILE *hanning_file;
+
 int main(void)
 {
     pierwszy_task();
-    for (int i = 0; i < N*8; i++)
+    open_files();
+    for (int i = 0; i < N; i++)
     {
         przerwanie_rcv();
     }
-
+    close_files();
     return(0);
 }
 
@@ -51,8 +58,11 @@ static void przerwanie_rcv()
     // x[n] = (float)((short)probka);
     x[n] = probka; // We also do not need the casting to short
     x[n+1] = 0.0f;
-    n += 2;
 
+    // Write signal sample to csv file
+    fprintf(signal_file, "%.2f,", x[n]);
+
+    n += 2;
 
     // if condition takes too long. It is better to do logical multiply
     n &= N2_mask;    // n = n & N_mask;
@@ -92,4 +102,18 @@ static void generate_sin(float *x, int n)
         x[i] = V * sin(t);
         t += time_interval;
     }
+}
+
+static void open_files()
+{
+    signal_file     = fopen("signal_file.csv", "w");
+    // magnitude_file  = fopen("magnitude_file.csv", "w");
+    // hanning_file    = fopen("hanning_file.csv", "w");
+}
+
+static void close_files()
+{
+    fclose(signal_file);
+    // fclose(magnitude_file);
+    // fclose(hanning_file);
 }
