@@ -26,6 +26,7 @@ float probka;  //In this case probka needs to be float, not int
 short n;
 float x[N2];
 float w[N];
+float m[N];
 int tmp;
 
 short n_read = 0;
@@ -71,6 +72,13 @@ static void przerwanie_rcv()
     {
        ++tmp;
         DSPF_sp_cfftr2_dit(x, w, N);
+        bit_rev(x, N);
+        for (int i = 0; i < N; i++)
+        {
+            m[i] = sqrt(x[2*i]*x[2*i] + x[2*i+1]*x[2*i+1]);
+            fprintf(magnitude_file, "%.2f,", m[i]);
+        }
+
     }
     // Write_mcasp1_xmt(probka);
     // Restart_mcasp1_if_error();  //Must be the last line of INT
@@ -107,13 +115,13 @@ static void generate_sin(float *x, int n)
 static void open_files()
 {
     signal_file     = fopen("signal_file.csv", "w");
-    // magnitude_file  = fopen("magnitude_file.csv", "w");
+    magnitude_file  = fopen("magnitude_file.csv", "w");
     // hanning_file    = fopen("hanning_file.csv", "w");
 }
 
 static void close_files()
 {
     fclose(signal_file);
-    // fclose(magnitude_file);
+    fclose(magnitude_file);
     // fclose(hanning_file);
 }
