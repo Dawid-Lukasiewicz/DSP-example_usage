@@ -2,3 +2,5 @@ build/
 build-manual/
 codec/
 .vscode/
+venv_dsp/
+__pycache__/
