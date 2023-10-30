@@ -20,6 +20,7 @@ static void przerwanie_rcv();
 static void pierwszy_task();
 static void generate_sin(float *x, int n);
 static void generate_hanning(float *x, int n);
+static void generate_bartlett(float *x, int n);
 static void open_files();
 static void close_files();
 
@@ -29,19 +30,22 @@ float x[N2];
 float w[N];
 float m[N];
 float h[N];
+float b[N];
 int tmp;
 
 short n_read = 0;
 float Read_mcasp1_rcv[N];
 
 FILE *signal_file;
+FILE *windowed_signal_file;
 FILE *magnitude_file;
 FILE *hanning_file;
+FILE *bartlett_file;
 
 int main(void)
 {
-    pierwszy_task();
     open_files();
+    pierwszy_task();
     for (int i = 0; i < N; i++)
     {
         przerwanie_rcv();
@@ -57,13 +61,13 @@ static void przerwanie_rcv()
 
     n_read &= N_mask;
 
-    x[n] = probka; // We also do not need the casting to short
-    x[n] *= h[n>>1];
+    x[n] =  probka; // We also do not need the casting to short
+    x[n] *= b[n>>1];
     x[n+1] = 0.0f;
 
     // Write signal sample to csv file
     fprintf(signal_file, "%.2f,", probka);
-    fprintf(hanning_file, "%.2f,", x[n]);
+    fprintf(windowed_signal_file, "%.2f,", x[n]);
 
     n += 2;
 
@@ -88,6 +92,7 @@ static void pierwszy_task()
 {
     generate_sin(Read_mcasp1_rcv, N);
     generate_hanning(h, N);
+    generate_bartlett(b, N);
     n_read = 0;
     n = 0;
     tw_genr2fft(w, N);
@@ -110,19 +115,34 @@ static void generate_hanning(float *h, int n)
     for (int i = 0; i < n; i++)
     {
         h[i] = 0.5f*(1-cosf((2*PI*i)/(n-1)));
+        fprintf(hanning_file, "%.2f,", h[i]);
+    }
+}
+
+static void generate_bartlett(float *b, int n)
+{
+    float L = (float)n;
+    for (int i = 0; i < n; i++)
+    {
+        b[i] = 1 - fabs(((float)i - L/2)/(L/2));
+        fprintf(bartlett_file, "%.2f,", b[i]);
     }
 }
 
 static void open_files()
 {
-    signal_file     = fopen("signal_file.csv", "w");
-    magnitude_file  = fopen("magnitude_file.csv", "w");
-    hanning_file    = fopen("hanning_file.csv", "w");
+    signal_file             = fopen("signal_file.csv", "w");
+    windowed_signal_file    = fopen("windowed_signal_file.csv", "w");
+    magnitude_file          = fopen("magnitude_file.csv", "w");
+    hanning_file            = fopen("hanning_file.csv", "w");
+    bartlett_file           = fopen("bartlett_file.csv", "w");
 }
 
 static void close_files()
 {
     fclose(signal_file);
+    fclose(windowed_signal_file);
     fclose(magnitude_file);
     fclose(hanning_file);
+    fclose(bartlett_file);
 }
