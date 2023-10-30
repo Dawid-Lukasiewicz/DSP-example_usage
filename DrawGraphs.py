@@ -29,14 +29,32 @@ N = 512
 
 working_path = Path(".")
 build_path = working_path.joinpath("build-manual")
-file_name = build_path.joinpath("signal_file.csv")
 
-data = read_data_from_csv(file_name, N)
+file_names = [
+    "signal_file.csv",
+    "windowed_signal_file.csv",
+    "hanning_file.csv",
+    "bartlett_file.csv",
+    "magnitude_file.csv"
+]
 
-plt.figure(figsize=(10, 10))
-plt.plot(data[0], data[1])
-plt.xlabel("samples")
-plt.ylabel("values")
-plt.title("signal")
+titles = [
+    "signal",
+    "windowed signal",
+    "hanning window",
+    "bartlett window",
+    "magnitude",
+]
+
+i = 0
+for file_name in file_names:
+    path = build_path.joinpath(file_name)
+    data = read_data_from_csv(path, N)
+    plt.figure(i, figsize=(10, 10))
+    plt.plot(data[0], data[1])
+    plt.xlabel("samples")
+    plt.ylabel("values")
+    plt.title(titles[i])
+    i += 1
 
 plt.show()
