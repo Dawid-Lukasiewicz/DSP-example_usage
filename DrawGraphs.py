@@ -2,6 +2,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+import argparse
 
 def read_data_from_csv(file, n: int) -> [int, float]:
     if file is None:
@@ -27,6 +28,11 @@ def read_data_from_csv(file, n: int) -> [int, float]:
 
 N = 512
 
+parser = argparse.ArgumentParser()
+parser.add_argument('file_name', type=str)
+args = parser.parse_args()
+file_name = args.file_name
+
 working_path = Path(".")
 build_path = working_path.joinpath("build-manual")
 
@@ -38,23 +44,24 @@ file_names = [
     "magnitude_file.csv"
 ]
 
-titles = [
-    "signal",
-    "windowed signal",
-    "hanning window",
-    "bartlett window",
-    "magnitude",
-]
+titles = {
+    "signal_file.csv": "signal",
+    "windowed_signal_file.csv": "windowed signal",
+    "hanning_file.csv": "hanning window",
+    "bartlett_file.csv": "bartlett window",
+    "magnitude_file.csv": "magnitude"
+}
 
-i = 0
-for file_name in file_names:
-    path = build_path.joinpath(file_name)
-    data = read_data_from_csv(path, N)
-    plt.figure(i, figsize=(10, 10))
-    plt.plot(data[0], data[1])
-    plt.xlabel("samples")
-    plt.ylabel("values")
-    plt.title(titles[i])
-    i += 1
+if not (file_name in file_names):
+    exit("Invalid file name")
+
+path = build_path.joinpath(file_name)
+data = read_data_from_csv(path, N)
+plt.figure(1, figsize=(10, 10))
+plt.plot(data[0], data[1])
+plt.xlabel("samples")
+plt.ylabel("values")
+plt.title(titles[file_name])
+
 
 plt.show()
