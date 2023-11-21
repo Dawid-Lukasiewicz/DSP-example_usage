@@ -11,11 +11,11 @@
 #define N2_mask         ((N2)-1)
 
 #define V               1
-#define FREQ            1000
+#define FREQ_SINUS      1000
 #define SAMPLE_FREQ     48000
-#define T               (1/(FREQ))
+#define T               (1/(FREQ_SINUS))
 
-
+// Function for signal processing
 static void przerwanie_rcv();
 static void pierwszy_task();
 static void generate_sin(float *x, int n);
@@ -33,7 +33,6 @@ float h[N];
 float b[N];
 int tmp;
 
-short n_read = 0;
 float Read_mcasp1_rcv[N];
 
 FILE *signal_file;
@@ -56,11 +55,7 @@ int main(void)
 
 static void przerwanie_rcv()
 {
-    probka = Read_mcasp1_rcv[n_read];
-    ++n_read;
-
-    n_read &= N_mask;
-
+    probka = Read_mcasp1_rcv[n>>1];
     x[n] =  probka; // We also do not need the casting to short
     x[n] *= b[n>>1];
     x[n+1] = 0.0f;
@@ -93,7 +88,6 @@ static void pierwszy_task()
     generate_sin(Read_mcasp1_rcv, N);
     generate_hanning(h, N);
     generate_bartlett(b, N);
-    n_read = 0;
     n = 0;
     tw_genr2fft(w, N);
     bit_rev(w, N>>1);
@@ -102,7 +96,7 @@ static void pierwszy_task()
 static void generate_sin(float *x, int n)
 {
     float t = 0.0;
-    float time_interval = 2*PI*(((float)FREQ/(float)SAMPLE_FREQ));
+    float time_interval = 2*PI*(((float)FREQ_SINUS/(float)SAMPLE_FREQ));
     for (int i = 0; i < n; i++)
     {
         x[i] = V * sin(t);
