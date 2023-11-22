@@ -28,9 +28,6 @@ def read_data_from_csv(file) -> [int, float]:
     csv_file.close()
     return [x, y]
 
-
-N = 512
-
 parser = argparse.ArgumentParser()
 parser.add_argument('file_name', type=str)
 args = parser.parse_args()
