@@ -5,6 +5,8 @@
 #include "fft/DSPF_sp_cfftr2_dit.h"
 #include "fft/utility.h"
 
+#include "tinywav/tinywav.h"
+
 #define N               512
 #define N_mask          511
 #define N2              (2*(N))
@@ -41,6 +43,8 @@ FILE *windowed_whole_signal_file;
 FILE *magnitude_file;
 FILE *hanning_file;
 FILE *bartlett_file;
+
+TinyWav *input_wav;
 
 int main(void)
 {
@@ -130,6 +134,11 @@ static void generate_bartlett(float *b, int n)
         b[i] = 1 - fabs(((float)i - L/2)/(L/2));
         fprintf(bartlett_file, "%.2f,", b[i]);
     }
+}
+
+static void open_wav_files()
+{
+    int result = tinywav_open_read(input_wav, "./resources/audio-dtmf/Dtmf-0.wav", TW_INLINE);
 }
 
 static void open_files()
