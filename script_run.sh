@@ -3,7 +3,8 @@
 BUILD_PATH=build-manual
 
 pushd ${BUILD_PATH}
-./dsp
+./dsp ../resources/dialdtmf_wav_short/0.wav
+# ./dsp
 popd
 
 # python DrawGraphs.py signal_file.csv

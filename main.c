@@ -21,7 +21,7 @@ static void generate_sin(float *x, int n);
 static void generate_hanning(float *x, int n);
 static void generate_bartlett(float *x, int n);
 static int  open_wav_files();
-static int open_files(bool flag);
+static int open_files(bool flag, char *input_path);
 static void close_files(bool flag);
 
 float probka;  //In this case probka needs to be float, not int
@@ -48,8 +48,13 @@ int main(int argc, char *argv[])
 {
     int8_t flag_generate_singal = (argc > 1 ? true : false);
     int8_t err;
+    char* input_path;
 
-    err = open_files(flag_generate_singal);
+    if(flag_generate_singal)
+    {
+        input_path = argv[1];
+    }
+    err = open_files(flag_generate_singal, input_path);
     if(err)
     {
         close_files(flag_generate_singal);
@@ -165,13 +170,13 @@ static int open_wav_files()
     }
 }
 
-static int open_files(bool flag)
+static int open_files(bool flag, char *input_path)
 {
     int err = 0;
     if(flag)
     {
         err = tinywav_open_read(&input_wav
-                    ,"/home/dawid/Projects/studia/mgr/II_sem/AplikacjeProcesorowSygnalowych/dsp_project_linux/resources/dialdtmf_wav_short/6.wav"
+                    ,input_path
                     ,TW_INLINE);
 
     }
