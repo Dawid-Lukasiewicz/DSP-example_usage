@@ -16,7 +16,7 @@
 */
 
 float dtmf_find_peak(float *magnitude_spectrum, int N);
-void dtmf_find_samples(float *magnitude_spectrum, int sample1, int sample2, int N);
+void dtmf_find_samples(float *magnitude_spectrum, int *sample1, int *sample2, int N);
 char dtmf_decode(int sample1, int sample2);
 
 

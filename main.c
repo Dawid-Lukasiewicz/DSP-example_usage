@@ -105,7 +105,9 @@ static void przerwanie_rcv()
             m[i] = sqrt(x[2*i]*x[2*i] + x[2*i+1]*x[2*i+1]);
             fprintf(magnitude_file, "%.2f,", m[i]);
         }
-        float peak = dtmf_find_peak(x, N2);
+        int dtmf1, dtmf2;
+        dtmf_find_samples(x, &dtmf1, &dtmf2, N2);
+        printf("sample_dtmf1=%d, sample_dtmf2=%d\n\r", dtmf1, dtmf2);
     }
 }
 
