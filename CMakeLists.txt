@@ -5,6 +5,8 @@ set(CMAKE_C_STANDARD 17)
 
 add_executable(dsp
     main.c
+    dtmf.h
+    dtmf.c
     tinywav/tinywav.h
     tinywav/tinywav.c
 )

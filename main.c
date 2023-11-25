@@ -6,6 +6,7 @@
 #include "fft/utility.h"
 
 #include "tinywav/tinywav.h"
+#include "dtmf.h"
 
 #define N               512
 #define N_mask          511
@@ -104,7 +105,7 @@ static void przerwanie_rcv()
             m[i] = sqrt(x[2*i]*x[2*i] + x[2*i+1]*x[2*i+1]);
             fprintf(magnitude_file, "%.2f,", m[i]);
         }
-
+        float peak = dtmf_find_peak(x, N2);
     }
 }
 
