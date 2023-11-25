@@ -23,6 +23,7 @@ static void pierwszy_task();
 static void generate_sin(float *x, int n);
 static void generate_hanning(float *x, int n);
 static void generate_bartlett(float *x, int n);
+static int  open_wav_files();
 static void open_files();
 static void close_files();
 
@@ -44,10 +45,13 @@ FILE *magnitude_file;
 FILE *hanning_file;
 FILE *bartlett_file;
 
-TinyWav *input_wav;
+TinyWav input_wav;
 
 int main(void)
 {
+    int err = open_wav_files();
+    if(err) return 1;
+
     open_files();
     pierwszy_task();
     for (int i = 0; i < N; i++)
@@ -98,7 +102,8 @@ static void przerwanie_rcv()
 
 static void pierwszy_task()
 {
-    generate_sin(Read_mcasp1_rcv, N);
+    // generate_sin(Read_mcasp1_rcv, N);
+    printf("NumChannels=%d, SampleRate=%d", input_wav.h.NumChannels, input_wav.h.SampleRate);
     generate_hanning(h, N);
     generate_bartlett(b, N);
     n = 0;
@@ -136,9 +141,16 @@ static void generate_bartlett(float *b, int n)
     }
 }
 
-static void open_wav_files()
+static int open_wav_files()
 {
-    int result = tinywav_open_read(input_wav, "./resources/audio-dtmf/Dtmf-0.wav", TW_INLINE);
+    int err = tinywav_open_read(&input_wav
+                    ,"/home/dawid/Projects/studia/mgr/II_sem/AplikacjeProcesorowSygnalowych/dsp_project_linux/resources/dialdtmf_wav_short/0.wav"
+                    ,TW_INLINE);
+    if(err)
+    {
+        fprintf(stderr, "Error at reading audio file");
+        return 1;
+    }
 }
 
 static void open_files()
@@ -159,4 +171,5 @@ static void close_files()
     fclose(magnitude_file);
     fclose(hanning_file);
     fclose(bartlett_file);
+    tinywav_close_read(&input_wav);
 }
