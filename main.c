@@ -16,13 +16,13 @@
 
 // Function for signal processing
 static void przerwanie_rcv();
-static void pierwszy_task();
+static void pierwszy_task(bool flag);
 static void generate_sin(float *x, int n);
 static void generate_hanning(float *x, int n);
 static void generate_bartlett(float *x, int n);
 static int  open_wav_files();
-static void open_files();
-static void close_files();
+static int open_files(bool flag);
+static void close_files(bool flag);
 
 float probka;  //In this case probka needs to be float, not int
 short n;
@@ -44,19 +44,25 @@ FILE *bartlett_file;
 
 TinyWav input_wav;
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    int err = open_wav_files();
-    if(err) return 1;
+    int8_t flag_generate_singal = (argc > 1 ? true : false);
+    int8_t err;
 
-    open_files();
-    pierwszy_task();
+    err = open_files(flag_generate_singal);
+    if(err)
+    {
+        close_files(flag_generate_singal);
+        return 1;
+    }
+
+    pierwszy_task(flag_generate_singal);
     for (int i = 0; i < N; i++)
     {
         przerwanie_rcv();
     }
-    close_files();
-    return(0);
+    close_files(flag_generate_singal);
+    return 0;
 }
 
 static void przerwanie_rcv()
@@ -97,11 +103,16 @@ static void przerwanie_rcv()
     }
 }
 
-static void pierwszy_task()
+static void pierwszy_task(bool flag)
 {
-    // generate_sin(Read_mcasp1_rcv, N);
-    printf("NumChannels=%d, SampleRate=%d, SamplesNum=%d\n\r", input_wav.h.NumChannels, input_wav.h.SampleRate,  input_wav.numFramesInHeader);
-    tinywav_read_f(&input_wav, Read_mcasp1_rcv, N);
+    if(flag)
+    {
+        tinywav_read_f(&input_wav, Read_mcasp1_rcv, N);
+    }
+    else
+    {
+        generate_sin(Read_mcasp1_rcv, N);
+    }
     generate_hanning(h, N);
     generate_bartlett(b, N);
     n = 0;
@@ -154,23 +165,50 @@ static int open_wav_files()
     }
 }
 
-static void open_files()
+static int open_files(bool flag)
 {
+    int err = 0;
+    if(flag)
+    {
+        err = tinywav_open_read(&input_wav
+                    ,"/home/dawid/Projects/studia/mgr/II_sem/AplikacjeProcesorowSygnalowych/dsp_project_linux/resources/dialdtmf_wav_short/6.wav"
+                    ,TW_INLINE);
+
+    }
+    if(err)
+    {
+        fprintf(stderr, "Error at reading audio file");
+        return 1;
+    }
     signal_file                 = fopen("signal_file.csv", "w");
+    if(!signal_file) return 1;
+
     windowed_signal_file        = fopen("windowed_signal_file.csv", "w");
+    if(!windowed_signal_file) return 1;
+
     windowed_whole_signal_file  = fopen("windowed_whole_signal_file.csv", "w");
+    if(!windowed_whole_signal_file) return 1;
+
     magnitude_file              = fopen("magnitude_file.csv", "w");
+    if(!magnitude_file) return 1;
+
     hanning_file                = fopen("hanning_file.csv", "w");
+    if(!hanning_file) return 1;
+
     bartlett_file               = fopen("bartlett_file.csv", "w");
+    if(!bartlett_file) return 1;
+
+    return 0;
 }
 
-static void close_files()
+static void close_files(bool flag)
 {
-    fclose(signal_file);
-    fclose(windowed_signal_file);
-    fclose(windowed_whole_signal_file);
-    fclose(magnitude_file);
-    fclose(hanning_file);
-    fclose(bartlett_file);
-    tinywav_close_read(&input_wav);
+    if(flag && input_wav.f)         tinywav_close_read(&input_wav);
+
+    if(signal_file)                 fclose(signal_file);
+    if(windowed_signal_file)        fclose(windowed_signal_file);
+    if(windowed_whole_signal_file)  fclose(windowed_whole_signal_file);
+    if(magnitude_file)              fclose(magnitude_file);
+    if(hanning_file)                fclose(hanning_file);
+    if(bartlett_file)               fclose(bartlett_file);
 }
