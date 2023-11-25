@@ -15,9 +15,22 @@
 
 */
 
+#define DTMF_R1 697
+#define DTMF_R2 770
+#define DTMF_R3 852
+#define DTMF_R4 941
+#define DTMF_C1 1209
+#define DTMF_C2 1336
+#define DTMF_C3 1477
+#define DTMF_C4 1633
+
+/*
+Fk = k*Fs/N
+*/
+
 float dtmf_find_peak(float *magnitude_spectrum, int N);
-void dtmf_find_samples(float *magnitude_spectrum, int *sample1, int *sample2, int N);
-char dtmf_decode(int sample1, int sample2);
+void dtmf_find_samples(float *magnitude_spectrum, int *k1, int *k2, int N);
+char dtmf_decode(float Fs, int k1, int k2, int N);
 
 
 #endif //DTMF

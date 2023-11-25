@@ -106,8 +106,11 @@ static void przerwanie_rcv()
             fprintf(magnitude_file, "%.2f,", m[i]);
         }
         int dtmf1, dtmf2;
-        dtmf_find_samples(x, &dtmf1, &dtmf2, N2);
+        printf("peak=%f\n\r", dtmf_find_peak(m, N2));
+        dtmf_find_samples(m, &dtmf1, &dtmf2, N2);
         printf("sample_dtmf1=%d, sample_dtmf2=%d\n\r", dtmf1, dtmf2);
+        char dtmf_tone = dtmf_decode(input_wav.h.SampleRate, dtmf1, dtmf2, N2);
+        printf("dtmf tone=%c\n\r", dtmf_tone);
     }
 }
 
