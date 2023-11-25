@@ -12,9 +12,6 @@
 #define N2              (2*(N))
 #define N2_mask         ((N2)-1)
 
-#define V               1
-#define FREQ_SINUS      1000
-#define SAMPLE_FREQ     48000
 #define T               (1/(FREQ_SINUS))
 
 // Function for signal processing
@@ -103,7 +100,8 @@ static void przerwanie_rcv()
 static void pierwszy_task()
 {
     // generate_sin(Read_mcasp1_rcv, N);
-    printf("NumChannels=%d, SampleRate=%d", input_wav.h.NumChannels, input_wav.h.SampleRate);
+    printf("NumChannels=%d, SampleRate=%d, SamplesNum=%d\n\r", input_wav.h.NumChannels, input_wav.h.SampleRate,  input_wav.numFramesInHeader);
+    tinywav_read_f(&input_wav, Read_mcasp1_rcv, N);
     generate_hanning(h, N);
     generate_bartlett(b, N);
     n = 0;
@@ -113,11 +111,14 @@ static void pierwszy_task()
 
 static void generate_sin(float *x, int n)
 {
-    float t = 0.0;
-    float time_interval = 2*PI*(((float)FREQ_SINUS/(float)SAMPLE_FREQ));
+    float v = 1.0f;
+    float freq_sinus = 1000.0f;
+    float sample_freq = 48000.0f;
+    float t = 0.0f;
+    float time_interval = 2*PI*((freq_sinus/sample_freq));
     for (int i = 0; i < n; i++)
     {
-        x[i] = V * sin(t);
+        x[i] = v * sin(t);
         t += time_interval;
     }
 }
@@ -144,7 +145,7 @@ static void generate_bartlett(float *b, int n)
 static int open_wav_files()
 {
     int err = tinywav_open_read(&input_wav
-                    ,"/home/dawid/Projects/studia/mgr/II_sem/AplikacjeProcesorowSygnalowych/dsp_project_linux/resources/dialdtmf_wav_short/0.wav"
+                    ,"/home/dawid/Projects/studia/mgr/II_sem/AplikacjeProcesorowSygnalowych/dsp_project_linux/resources/dialdtmf_wav_short/6.wav"
                     ,TW_INLINE);
     if(err)
     {
